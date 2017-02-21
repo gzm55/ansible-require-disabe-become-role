@@ -3,3 +3,13 @@
   gather_facts: False
   roles:
   - ansible-require-disabe-become-role
+  tasks:
+  - name: non-become task
+    connection: local
+    raw: 'true'
+    become: False
+    become_user: "{{ ansible_user | d(ansible_local_user, True) }}"
+    vars:
+    - ansible_become: False
+    - ansible_become_user: "{{ ansible_user | d(ansible_local_user, True) }}"
+    - ansible_become_exe: 'false'
