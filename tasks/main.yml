@@ -6,10 +6,10 @@
   - ansible_play_hosts_all
     | map('extract', hostvars, 'ansible_become')
     | select('defined')
+    | map('bool')
     | difference([False])
     | list
-    | length
-    == ansible_play_hosts_all | length
+    | length == 1
   - ansible_play_hosts_all
     | map('extract', hostvars, 'ansible_become_user')
     | reject('defined')
