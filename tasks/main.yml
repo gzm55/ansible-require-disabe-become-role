@@ -10,11 +10,14 @@
     | difference([False])
     | list
     | length == 1
-  - ansible_play_hosts_all
-    | map('extract', hostvars, 'ansible_become_user')
-    | reject('defined')
-    | list
-    | length == 0
+    or ( local_ansible_config['privilege_escalation/become_allow_same_user']
+         | d(False)
+         | bool == False
+         and ansible_play_hosts_all
+             | map('extract', hostvars, 'ansible_become_user')
+             | reject('defined')
+             | list
+             | length == 0 )
   become: False
   vars:
   - ansible_become: False
