@@ -57,10 +57,10 @@ script:
   - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
   - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
   - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes -e ansible_become_user=x
-  - true && ! ANSIBLE_BECOME=True ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
-  - ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
-  - true && ! ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
-  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
+  - ANSIBLE_BECOME=True ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+  - true && ! ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+  - ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
+  - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
 
-#notifications:
-#  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
