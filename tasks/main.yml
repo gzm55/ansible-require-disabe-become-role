@@ -19,6 +19,7 @@
              | list
              | length == 0 )
   become: False
+  become_user: --FAKE::::USER={{ lookup('pipe', 'echo $PPID') }}
   vars:
   - ansible_become: False
   - ansible_become_user: --FAKE::::USER={{ lookup('pipe', 'echo $PPID') }}

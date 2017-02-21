@@ -38,6 +38,7 @@ Including an example of how to use your role (for instance, with variables passe
       - name: a non-become task
         ping:
         become: False
+        become_user: "{{ ansible_user | d(lookup('pipe', 'id -un')) }}"
         vars:
           ansible_become: False
           ansible_become_user: "{{ ansible_user | d(lookup('pipe', 'id -un')) }}"
