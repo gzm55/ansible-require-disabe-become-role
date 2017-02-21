@@ -24,25 +24,43 @@ install:
 
 script:
   - set -e
+  - export ANSIBLE_ROLES_PATH=$(cd ..; pwd)
 
-  # Basic role syntax check
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
+  - echo "=====[round 0: Basic role syntax check]====="
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
-  # Should success cases
+  - echo "=====[round 1: unset become_allow_same_user]====="
+  - printf '' >ansible.cfg
   - ansible-playbook tests/test.yml -i tests/inventory
   - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
   - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
-  - printf '[defaults]\nroles_path=../\n[privilege_escalation]\nbecome_allow_same_user=yes' >ansible.cfg
-  - ansible-playbook tests/test.yml -i tests/inventory
-  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+  - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes -e ansible_become_user=x
+  - ANSIBLE_BECOME=True ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+  - ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+  - ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
 
-  # Should fail cases
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
+  - echo "=====[round 2: set become_allow_same_user to False]====="
+  - printf '[privilege_escalation]\nbecome_allow_same_user=no' >ansible.cfg
+  - ansible-playbook tests/test.yml -i tests/inventory
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
   - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes -e ansible_become_user=x
-  - printf '[defaults]\nroles_path=../\n[privilege_escalation]\nbecome_allow_same_user=yes' >ansible.cfg
+  - ANSIBLE_BECOME=True ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+  - ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+  - ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
+
+  - echo "=====[round 3: set become_allow_same_user to True]====="
+  - printf '[privilege_escalation]\nbecome_allow_same_user=True' >ansible.cfg
+  - ansible-playbook tests/test.yml -i tests/inventory
   - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
   - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes -e ansible_become_user=x
+  - true && ! ANSIBLE_BECOME=True ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+  - ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+  - true && ! ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
 
 #notifications:
 #  webhooks: https://galaxy.ansible.com/api/v1/notifications/
