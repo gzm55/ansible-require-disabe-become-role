@@ -1,0 +1,29 @@
+---
+- name: try force disable become
+  run_once: True
+  when:
+  - inventory_hostname == ansible_play_hosts[0]
+  - ansible_play_hosts_all
+    | map('extract', hostvars, 'ansible_become')
+    | select('defined')
+    | difference([False])
+    | list
+    | length
+    == ansible_play_hosts_all | length
+  - ansible_play_hosts_all
+    | map('extract', hostvars, 'ansible_become_user')
+    | reject('defined')
+    | list
+    | length == 0
+  become: False
+  vars:
+  - ansible_become: False
+  - ansible_become_user: --FAKE::::USER={{ lookup('pipe', 'echo $PPID') }}
+  assert:
+    that: "ansible_become == False or
+           ( local_ansible_config['privilege_escalation/become_allow_same_user']
+             | d(False)
+             | bool == False and
+             ansible_become_user == ('--FAKE::::USER=' + lookup('pipe', 'echo $PPID'))
+           )
+          "
