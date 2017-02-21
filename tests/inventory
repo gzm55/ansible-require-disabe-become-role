@@ -1,1 +1,4 @@
-github.com ansible_become_user=root
+serverA
+serverB ansible_become=True
+serverC ansible_become_user=C
+serverD ansible_become=True ansible_become_user=D

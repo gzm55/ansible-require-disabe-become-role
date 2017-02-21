@@ -22,12 +22,27 @@ install:
   # Check ansible version
   - ansible --version
 
-  # Create ansible.cfg with correct roles_path
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
-
 script:
+  - set -e
+
   # Basic role syntax check
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+
+  # Should success cases
+  - printf '[defaults]\nroles_path=../' >ansible.cfg
+  - ansible-playbook tests/test.yml -i tests/inventory
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=y
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+  - printf '[defaults]\nroles_path=../\n[privilege_escalation]\nbecome_allow_same_user=yes' >ansible.cfg
+  - ansible-playbook tests/test.yml -i tests/inventory
+  - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+
+  # Should fail cases
+  - printf '[defaults]\nroles_path=../' >ansible.cfg
+  - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=y -e ansible_become_user=x
+  - printf '[defaults]\nroles_path=../\n[privilege_escalation]\nbecome_allow_same_user=yes' >ansible.cfg
+  - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=y
+  - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=y -e ansible_become_user=x
 
 #notifications:
 #  webhooks: https://galaxy.ansible.com/api/v1/notifications/
