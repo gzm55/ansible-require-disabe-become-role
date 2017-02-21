@@ -26,10 +26,10 @@ script:
   - set -e
   - export ANSIBLE_ROLES_PATH=$(cd ..; pwd)
 
-  - echo "=====[round 0: Basic role syntax check]====="
+  - echo "=====[round 0][Basic role syntax check]====="
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
-  - echo "=====[round 1: unset become_allow_same_user]====="
+  - echo "=====[round 1][unset become_allow_same_user]====="
   - printf '' >ansible.cfg
   - ansible-playbook tests/test.yml -i tests/inventory
   - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
@@ -40,7 +40,7 @@ script:
   - ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
   - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
 
-  - echo "=====[round 2: set become_allow_same_user to False]====="
+  - echo "=====[round 2][set become_allow_same_user to False]====="
   - printf '[privilege_escalation]\nbecome_allow_same_user=no' >ansible.cfg
   - ansible-playbook tests/test.yml -i tests/inventory
   - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
@@ -51,7 +51,7 @@ script:
   - ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
   - ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
 
-  - echo "=====[round 3: set become_allow_same_user to True]====="
+  - echo "=====[round 3][set become_allow_same_user to True]====="
   - printf '[privilege_escalation]\nbecome_allow_same_user=True' >ansible.cfg
   - ansible-playbook tests/test.yml -i tests/inventory
   - true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
