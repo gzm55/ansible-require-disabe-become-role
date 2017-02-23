@@ -33,6 +33,7 @@
           "
 
 - name: current local user
+  when: ansible_local_user is not defined
   run_once: True
   set_fact:
     ansible_local_user: "{{ require_local_command['PATH='+lookup('env','PATH')|quote]['id']
