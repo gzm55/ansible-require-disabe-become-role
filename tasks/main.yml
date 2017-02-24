@@ -3,7 +3,7 @@
   run_once: True
   when:
   - inventory_hostname == ansible_play_hosts[0]
-  - ansible_play_hosts_all
+  - groups.all
     | map('extract', hostvars, 'ansible_become')
     | select('defined')
     | map('bool')
@@ -13,7 +13,7 @@
     or ( local_ansible_config['privilege_escalation/become_allow_same_user']
          | d(False)
          | bool == False
-         and ansible_play_hosts_all
+         and groups.all
              | map('extract', hostvars, 'ansible_become_user')
              | reject('defined')
              | list
