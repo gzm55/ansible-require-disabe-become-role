@@ -7,7 +7,7 @@
         | map('extract', hostvars, 'ansible_become')
         | map('d', False)
         | map('bool')
-        | unque ]
+        | unique ]
     )
     | difference([[False]])
     | first
