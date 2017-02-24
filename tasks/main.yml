@@ -3,32 +3,40 @@
   run_once: True
   when:
   - inventory_hostname == ansible_play_hosts[0]
-  - groups.all
-    | map('extract', hostvars, 'ansible_become')
-    | select('defined')
-    | map('bool')
-    | difference([False])
+  - ( [ groups.all
+        | map('extract', hostvars, 'ansible_become')
+        | map('d', False)
+        | map('bool')
+        | unque ]
+    )
+    | difference([[False]])
+    | first
+    | d([])
     | list
     | length == 1
     or ( local_ansible_config['privilege_escalation/become_allow_same_user']
          | d(False)
          | bool == False
-         and groups.all
-             | map('extract', hostvars, 'ansible_become_user')
-             | reject('defined')
+         and [ groups.all
+               | map('extract', hostvars, 'ansible_become_user')
+               | map('d', omit)
+               | unique ]
+             | difference([[omit]])
+             | first
+             | d([])
              | list
-             | length == 0 )
+             | length == 1 )
   become: False
-  become_user: --FAKE::::USER={{ lookup('pipe', 'echo $PPID') }}
+  become_user: --FAKE::::USER={{ omit }}
   vars:
   - ansible_become: False
-  - ansible_become_user: --FAKE::::USER={{ lookup('pipe', 'echo $PPID') }}
+  - ansible_become_user: --FAKE::::USER={{ omit }}
   assert:
     that: "ansible_become == False or
            ( local_ansible_config['privilege_escalation/become_allow_same_user']
              | d(False)
              | bool == False and
-             ansible_become_user == ('--FAKE::::USER=' + lookup('pipe', 'echo $PPID'))
+             ansible_become_user == ('--FAKE::::USER=' + omit)
            )
           "
 
