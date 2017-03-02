@@ -35,14 +35,15 @@ Including an example of how to use your role (for instance, with variables passe
     - hosts: servers
       roles:
       - { role: gzm55.require_disabe_become }
+      - { role: gzm55.local_id_plugin }
       tasks:
       - name: a non-become task
         ping:
         become: False
-        become_user: "{{ ansible_user | d(ansible_local_user, True) }}"
+        become_user: "{{ ansible_user | d(lookup('id', 'euname'), True) }}"
         vars:
           ansible_become: False
-          ansible_become_user: "{{ ansible_user | d(ansible_local_user, True) }}"
+          ansible_become_user: "{{ ansible_user | d(lookup('id', 'euname'), True) }}"
 
 TODO
 ----
