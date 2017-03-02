@@ -25,7 +25,6 @@ Dependencies
 ------------
 
 - `gzm55.local_ansible_cnofig`
-- `gzm55.require_local_command`
 
 Example Playbook
 ----------------
