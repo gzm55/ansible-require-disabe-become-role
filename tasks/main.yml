@@ -14,9 +14,7 @@
     | d([])
     | list
     | length == 1
-    or ( local_ansible_config['privilege_escalation/become_allow_same_user']
-         | d(False)
-         | bool == False
+    or ( not lookup('config', 'BECOME_ALLOW_SAME_USER')
          and [ groups.all
                | map('extract', hostvars, 'ansible_become_user')
                | map('d', omit)
@@ -32,10 +30,8 @@
   - ansible_become: False
   - ansible_become_user: --FAKE::::USER={{ omit }}
   assert:
-    that: "ansible_become == False or
-           ( local_ansible_config['privilege_escalation/become_allow_same_user']
-             | d(False)
-             | bool == False and
-             ansible_become_user == ('--FAKE::::USER=' + omit)
+    that: "not ansible_become or
+           ( not lookup('config', 'BECOME_ALLOW_SAME_USER')
+             and ansible_become_user == ('--FAKE::::USER=' + omit)
            )
           "
