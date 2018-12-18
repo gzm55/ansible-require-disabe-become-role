@@ -24,7 +24,7 @@ N/A
 Dependencies
 ------------
 
-- `gzm55.local_ansible_cnofig`
+N/A
 
 Example Playbook
 ----------------
