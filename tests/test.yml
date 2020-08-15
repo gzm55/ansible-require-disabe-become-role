@@ -3,14 +3,20 @@
   gather_facts: False
   roles:
   - ansible-require-disabe-become-role
-  - gzm55.local_id_plugin
+
   tasks:
   - name: non-become task
+    become: True
+    become_user: root
     connection: local
-    raw: 'true'
-    become: False
-    become_user: "{{ ansible_user | d(lookup('id', 'euname'), True) }}"
     vars:
-    - ansible_become: False
-    - ansible_become_user: "{{ ansible_user | d(lookup('id', 'euname'), True) }}"
-    - ansible_become_exe: 'false'
+    block:
+    - name: diaable diaable
+      set_fact:
+        current_ansible_user: "{{ ansible_user | d(None) }}"
+        current_ansible_become_user: "{{ (ansible_connection == 'local') | ternary(lookup('id', 'uname'), current_ansible_user) }}"
+    - raw: true
+      vars:
+      - ansible_become: False
+      - ansible_become_user: "{{ current_ansible_become_user }}"
+      - ansible_become_exe: 'false' # use false to force fail any become command

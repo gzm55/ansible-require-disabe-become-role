@@ -1,29 +1,7 @@
 ---
 - name: try force disable become
   run_once: True
-  when:
-  - inventory_hostname == ansible_play_hosts[0]
-  - ( [ groups.all
-        | map('extract', hostvars, 'ansible_become')
-        | map('d', False)
-        | map('bool')
-        | unique ]
-    )
-    | difference([[False]])
-    | first
-    | d([])
-    | list
-    | length == 1
-    or ( not lookup('config', 'BECOME_ALLOW_SAME_USER')
-         and [ groups.all
-               | map('extract', hostvars, 'ansible_become_user')
-               | map('d', omit)
-               | unique ]
-             | difference([[omit]])
-             | first
-             | d([])
-             | list
-             | length == 1 )
+  when: inventory_hostname == ansible_play_hosts_all[0]
   become: False
   become_user: --FAKE::::USER={{ omit }}
   vars:
@@ -32,6 +10,9 @@
   assert:
     that: "not ansible_become or
            ( not lookup('config', 'BECOME_ALLOW_SAME_USER')
-             and ansible_become_user == ('--FAKE::::USER=' + omit)
+             and ( ansible_become_user == ('--FAKE::::USER=' + omit) or
+                   ansible_become_user == (ansible_connection == 'local')
+                                          | ternary(lookup('id', 'uname'), ansible_user | d)
+                 )
            )
           "
