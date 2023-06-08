@@ -1,4 +1,6 @@
 galaxy_info:
+  role_name: require_disabe_become
+  namespace: gzm55
   author: James Z.M. Gao
   description: Assert the task can force disable become action.
 
@@ -9,17 +11,13 @@ galaxy_info:
 
   platforms:
   - name: GenericBSD
-    versions:
-    - any
+    versions: [all]
   - name: GenericLinux
-    versions:
-    - any
+    versions: [all]
   - name: Windows
-    versions:
-    - all
+    versions: [all]
   - name: GenericUNIX
-    versions:
-    - any
+    versions: [all]
 
   galaxy_tags: [system]
 
