@@ -5,18 +5,18 @@
   - ansible-require-disabe-become-role
 
   tasks:
-  - name: non-become task
+  - name: Non-become task
     become: True
     become_user: root
     connection: local
-    vars:
     block:
-    - name: diaable diaable
-      set_fact:
+    - name: Diaable diaable
+      ansible.builtin.set_fact:
         current_ansible_user: "{{ ansible_user | d(None) }}"
         current_ansible_become_user: "{{ (ansible_connection == 'local') | ternary(lookup('id', 'uname'), current_ansible_user) }}"
-    - raw: 'true'
+    - name: Run simple script
+      nsible.builtin.raw: 'true'
       vars:
-      - ansible_become: False
-      - ansible_become_user: "{{ current_ansible_become_user }}"
-      - ansible_become_exe: 'false' # use false to force fail any become command
+        ansible_become: False
+        ansible_become_user: "{{ current_ansible_become_user }}"
+        ansible_become_exe: 'false' # use false to force fail any become command

@@ -1,13 +1,13 @@
 ---
-- name: try force disable become
+- name: Try force disable become
   run_once: True
   when: inventory_hostname == ansible_play_hosts_all[0]
   become: False
   become_user: --FAKE::::USER={{ omit }}
   vars:
-  - ansible_become: False
-  - ansible_become_user: --FAKE::::USER={{ omit }}
-  assert:
+    ansible_become: False
+    ansible_become_user: --FAKE::::USER={{ omit }}
+  ansible.builtin.assert:
     that: "not ansible_become or
            ( not lookup('config', 'BECOME_ALLOW_SAME_USER')
              and ( ansible_become_user == ('--FAKE::::USER=' + omit) or

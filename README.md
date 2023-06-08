@@ -1,4 +1,4 @@
-require_disabe_become (1.0.2-dev)
+require_disabe_become (2.0.0-dev)
 =================================
 
 Some ansible tasks is designed to run actions NOT via become,
@@ -13,7 +13,7 @@ Requirements
 ------------
 
 Python modules:
-- ansible>=2.5
+- ansible>=2.8
 - jinja2>=2.7
 
 Role Variables

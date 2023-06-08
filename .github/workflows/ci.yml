@@ -41,7 +41,7 @@ jobs:
         ansible-galaxy install -p tests/roles -r requirements.yml
         printf '[defaults]\nroles_path=..:tests/roles' >ansible.cfg
     - name: lint
-      run: ansible-lint --show-relpath --exclude tests/roles
+      run: ansible-lint --show-relpath --exclude tests/roles --exclude .travis.yml
 
   deploy-job:
     name: deploy the role on tag
