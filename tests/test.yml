@@ -17,6 +17,7 @@
         current_ansible_become_user: "{{ (ansible_connection == 'local') | ternary(lookup('id', 'uname'), current_ansible_user) }}"
     - name: Run simple script
       ansible.builtin.raw: 'true'
+      changed_when: False
       vars:
         ansible_become: False
         ansible_become_user: "{{ current_ansible_become_user }}"
