@@ -39,6 +39,7 @@ jobs:
         pip3 install ansible-lint
         ansible-lint --version
         ansible-galaxy install -p tests/roles -r requirements.yml
+        printf '[defaults]\nroles_path=..:tests/roles' >ansible.cfg
     - name: lint
       run: ansible-lint --show-relpath
 
