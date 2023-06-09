@@ -1,4 +1,4 @@
-require_disabe_become (2.0.0-dev)
+require_disabe_become (2.0.0)
 =================================
 
 Some ansible tasks is designed to run actions NOT via become,
