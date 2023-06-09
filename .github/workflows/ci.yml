@@ -2,6 +2,9 @@
 name: ci workflow
 "on": push
 
+env:
+  ANSIBLE_ROLES_PATH: "..:tests/roles"
+
 jobs:
   test-job:
     name: test the role
@@ -20,13 +23,20 @@ jobs:
       run: |
         pip3 install -r requirements.txt
         ansible-galaxy install -p tests/roles -r requirements.yml
-        printf '[defaults]\nroles_path=..:tests/roles' >ansible.cfg
 
     - name: syntax check
       run: ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
-        #- name: run ci check
-        #run: ansible-playbook tests/test.yml -i tests/inventory
+    - name: unset become_allow_same_user
+      run: |
+        ansible-playbook tests/test.yml -i tests/inventory
+        ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+        ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+        true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes -e ansible_become_user=x
+        ANSIBLE_BECOME=True ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+        ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+        ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
+        ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
 
   lint-job:
     name: lint codes
@@ -39,7 +49,6 @@ jobs:
         pip3 install ansible-lint
         ansible-lint --version
         ansible-galaxy install -p tests/roles -r requirements.yml
-        printf '[defaults]\nroles_path=..:tests/roles' >ansible.cfg
     - name: lint
       run: ansible-lint --show-relpath --exclude tests/roles --exclude .travis.yml
 
