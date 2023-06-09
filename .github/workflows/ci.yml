@@ -29,6 +29,7 @@ jobs:
 
     - name: unset become_allow_same_user
       run: |
+        printf '' >ansible.cfg
         ansible-playbook tests/test.yml -i tests/inventory
         ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
         ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
@@ -37,6 +38,30 @@ jobs:
         ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
         ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
         ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
+
+    - name: set become_allow_same_user to False
+      run: |
+        printf '[privilege_escalation]\nbecome_allow_same_user=no' >ansible.cfg
+        ansible-playbook tests/test.yml -i tests/inventory
+        ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+        ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+        true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes -e ansible_become_user=x
+        ANSIBLE_BECOME=True ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+        ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+        ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
+        ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
+
+    - name: set become_allow_same_user to True
+      run: |
+        printf '[privilege_escalation]\nbecome_allow_same_user=True' >ansible.cfg
+        ansible-playbook tests/test.yml -i tests/inventory
+        true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+        ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+        true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes -e ansible_become_user=x
+        ANSIBLE_BECOME=True ansible-playbook tests/test.yml -i tests/inventory -e ansible_become_user=x
+        true && ! ANSIBLE_BECOME_USER=x ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes
+        ansible-playbook tests/test.yml -i tests/inventory --become -e ansible_become_user=x
+        true && ! ansible-playbook tests/test.yml -i tests/inventory -e ansible_become=yes --become-user=x
 
   lint-job:
     name: lint codes
